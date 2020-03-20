@@ -7,15 +7,20 @@ function md = tepInspect_eyetracking(ext, md)
     
     % check metadata is correct format
     if ~isa(md, 'teMetadata')
-        md.Checks.tepInspect_eyetracking_success = false;
-        md.Checks.tepInspect_eyetracking_outcome = 'passed metadata was not teMetadata instance.';
+        md.tepInspect_eyetracking.success = false;
+        md.tepInspect_eyetracking.outcome = 'passed metadata was not teMetadata instance.';
         return
     end
     
     md.Checks.eyetracking_t1 = ext.Buffer(1, 1);
     md.Checks.eyetracking_t2 = ext.Buffer(end, 1);
-
-    md.Checks.tepInspect_eyetracking_success = true;
-    md.Checks.tepInspect_eyetracking_outcome = 'success';
+    
+    % check for early datasets with PTB GetSecs clock
+    if md.Checks.eyetracking_t1 < 1e6
+        md.Checks.eyetracking_timestamps_old = true;
+    end
+        
+    md.tepInspect_eyetracking.success = true;
+    md.tepInspect_eyetracking.outcome = 'success';
 
 end

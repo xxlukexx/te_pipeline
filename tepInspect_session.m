@@ -9,14 +9,14 @@ function md = tepInspect_session(tracker, md)
     
     % check metadata is correct format
     if ~isa(md, 'teMetadata')
-        md.Checks.tepInspect_session_success = false;
-        md.Checks.tepInspect_session_outcome = 'passed metadata was not teMetadata instance.';
+        md.tepInspect_session.success = false;
+        md.tepInspect_session.outcome = 'passed metadata was not teMetadata instance.';
         return
     end
     
     if ~isa(tracker, 'teTracker')
-        md.Checks.tepInspect_session_success= false;
-        md.Checks.tepInspect_session_.outcome = 'passed variable was not teTracker instance';
+        md.tepInspect_session.success= false;
+        md.tepInspect_session.outcome = 'passed variable was not teTracker instance';
         return
     end
     
@@ -33,14 +33,25 @@ function md = tepInspect_session(tracker, md)
         md.(vars{v}) = vals{v};
     end
     
-    % get log indices. Do this by convertin the log to a table a recording
-    % earliest and latest row indices (which will correspond to log
-    % indices)
-    tab = teLogExtract(tracker.Log);
-    md.Checks.log_t1 = min(tab.timestamp);
-    md.Checks.log_t2 = max(tab.timestamp);
-    
-    md.Checks.tepInspect_session_success = true;
-    md.Checks.tepInspect_session_outcome = 'success';
+    % check log
+    md.Log.present = isprop(tracker, 'Log') && ~isempty(tracker.Log);
+    if md.Log.present
+        
+        % get log indices. Do this by convertin the log to a table a recording
+        % earliest and latest row indices (which will correspond to log
+        % indices)
+        tab = teLogExtract(tracker.Log);
+        md.Log.log_t1 = min(tab.timestamp);
+        md.Log.log_t2 = max(tab.timestamp);
+
+        % check for early datasets with PTB GetSecs clock
+        if md.Log.log_t1 < 1e6
+            md.Log.log_timestamps_old = true;
+        end
+        
+    end
+
+    md.tepInspect_session.success = true;
+    md.tepInspect_session.outcome = 'success';
 
 end

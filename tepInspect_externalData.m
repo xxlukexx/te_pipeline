@@ -9,8 +9,8 @@ function md = tepInspect_externalData(ext, md)
     
     % check metadata is correct format
     if ~isa(md, 'teMetadata')
-        md.Checks.tepInspect_externalData_success = false;
-        md.Checks.tepInspect_externalData_outcome = 'passed metadata was not teMetadata instance.';
+        md.tepInspect_externalData.success = false;
+        md.tepInspect_externalData.outcome = 'passed metadata was not teMetadata instance.';
         return
     end
     
@@ -28,13 +28,13 @@ function md = tepInspect_externalData(ext, md)
         case 'fieldtrip'
             md = tepInspect_fieldtrip(ext, md);
         otherwise
-            md.Checks.tepInspect_externalData_success = false;
-            md.Checks.tepInspect_externalData_outcome = sprintf(...
+            md.tepInspect_externalData.success = false;
+            md.tepInspect_externalData.outcome = sprintf(...
                 'Unkown data format: %s', ext.Type);
             return
     end
 
-    md.Checks.tepInspect_externalData_success = true;
-    md.Checks.tepInspect_externalData_outcome = 'success';
+    md.tepInspect_externalData.success = true;
+    md.tepInspect_externalData.outcome = 'success';
 
 end

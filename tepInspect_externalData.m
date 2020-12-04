@@ -1,4 +1,4 @@
-function md = tepInspect_externalData(ext, md)
+function [md, tracker] = tepInspect_externalData(ext, md, tracker)
 
     teEcho('Inspecting external %s data...\n', ext.Type);
 
@@ -26,7 +26,7 @@ function md = tepInspect_externalData(ext, md)
         case 'screenrecording'
             md = tepInspect_screenrecording(ext, md);
         case 'fieldtrip'
-            md = tepInspect_fieldtrip(ext, md);
+            [md, tracker] = tepInspect_fieldtrip(ext, md, tracker);
         otherwise
             md.tepInspect_externalData.success = false;
             md.tepInspect_externalData.outcome = sprintf(...

@@ -13,7 +13,7 @@ function md = tepInspect_screenrecording(ext, md)
     end
     
     % determine whether the video has been synced
-    [hasSync, validSyncStruct] = teVideoHasValidSync(ext);
+    [hasSync, validSyncStruct, sync] = teVideoHasValidSync(ext);
     
     % optionally sync. May take this out as it's quite time consuming when
     % just inspecting data. OTOH it's a good way of forcing files to be
@@ -28,6 +28,10 @@ function md = tepInspect_screenrecording(ext, md)
             warning('Error syncing video:\n\n%s', ERR_sync.message)
         end
         hasSync = teVideoHasValidSync(ext);
+    else
+        % import existing sync (which was loaded by teVideoHasValidSync,
+        % earlier)
+        ext.ImportSync(sync);
     end
     
     % try to extract times from sync
@@ -39,6 +43,9 @@ function md = tepInspect_screenrecording(ext, md)
         if md.Checks.screenrecording_t1 < 1e6
             md.Checks.screenrecording_timestamps_old = true;
         end
+        
+        % store in metadata
+        md.sync.screenrecording = sync;
     end
 
     md.tepInspect_screenrecording.success = true;

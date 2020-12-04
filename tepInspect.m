@@ -19,6 +19,21 @@ function [md, smry] = tepInspect(path_data, varargin)
     smry = cell(numSes, 1);
     for s = 1:numSes
         
+%         % look for existing metadata
+%         path_md = fullfile(path_data, 'metadata');
+%         file_md = teFindFile(path_md, '*.metadata.mat');
+%         if exist(file_md, 'file')
+%             % load if found, then continue to next iteration of the loop
+%             % (next session)
+%             tmp = load(file_md);
+%             md{s} = tmp.metadata;
+%             fprintf('Loaded metadata from disk: %s\n', file_md);
+%             continue
+%         else
+%             % instantiate blank object if not found
+%             md{s} = teMetadata;
+%         end
+
         md{s} = teMetadata;
         
         % add tracker path to metadata
@@ -35,11 +50,12 @@ function [md, smry] = tepInspect(path_data, varargin)
         
         % loop through and inspect external data
         for ed = 1:ext.Count
-            if isa(ext(ed), 'teExternalData_ScreenRecording') && ignoreScreenRecording
+            if isa(ext(ed), 'teExternalData_ScreenRecording') &&...
+                    ignoreScreenRecording && ~teVideoHasValidSync(ext(ed))
                 warning('Skipped screen recording due to -ignoreScreenRecording flag.')
             else
                 if ext(ed).Valid
-                    md{s} = tepInspect_externalData(ext(ed), md{s});
+                    [md{s}, tracker{s}] = tepInspect_externalData(ext(ed), md{s}, tracker{s});
                 end
             end
         end
@@ -57,6 +73,18 @@ function [md, smry] = tepInspect(path_data, varargin)
             end
         end
         
+        % hash tracker and external data, to detect changes in future
+        md{s}.Hash = lm_hashVariables(tracker{s}, ext);
+        
+        % write metadata to session folder
+        path_md = fullfile(path_data, 'metadata');
+        tryToMakePath(path_md);
+        file_md = fullfile(path_md, sprintf('%s.metadata.mat', md{s}.GUID));
+        metadata = md{s};
+        saveMetadata(file_md, metadata)
+        
+        saveTracker(md{s}.Paths('tracker'), tracker{s});
+        
     end
     
     % if only one session passed, remove the metadata and summary from
@@ -66,4 +94,15 @@ function [md, smry] = tepInspect(path_data, varargin)
         smry = smry{1};
     end
 
+end
+
+function saveMetadata(file_md, metadata)
+    save(file_md, 'metadata')
+end
+
+function saveTracker(file_tracker, tracker)
+    file_backup = strrep(file_tracker, '.mat',...
+        '.mat.bak.tepInspect');
+    movefile(file_tracker, file_backup);
+    save(file_tracker, 'tracker');
 end

@@ -71,7 +71,7 @@ function tepPlotDataTimes(md, fig)
 %         str = sprintf('%s%0d Start: %s End: %s Duration: %s',...
 %             type{n}, s, t1_str, t2_str, dur_str);
 
-        rectangle('Position', [t1, n - 1, t2 - t1, 1], 'FaceColor', cols(t, :))
+        rectangle('Position', [t1, n - 1, t2 - t1, 1], 'FaceColor', cols(t, :), 'parent', fig)
 %         rectangle('Position', [t1, t - 1, t2 - t1, 1], 'FaceColor', cols(t, :))
 
 %         tb = textBounds(t1t2_str, gca);
@@ -79,7 +79,7 @@ function tepPlotDataTimes(md, fig)
 %         tx = t1 + ((t2 - t1) / 2) - ((tb(3) / 2) * diff(xl));
         tx = t1 + ((t2 - t1) / 2);
         ty = n - 0.5;% - (tb(4) / 2);
-        text(tx, ty, str, 'HorizontalAlignment', 'center', 'FontSize', fontSize)
+        text(tx, ty, str, 'HorizontalAlignment', 'center', 'FontSize', fontSize, 'parent', fig)
 %         
 %         tb = textBounds(t1_str, gca);
 %         tx = t1 + ((t2 - t1) * .005);
@@ -106,10 +106,10 @@ function tepPlotDataTimes(md, fig)
             xr(2) = t2;
         end
         
-        box('off')
+        box(fig, 'off')
 
-        hold on  
-        set(gca, 'Visible', 'off')
+        hold(fig, 'on')
+        set(fig, 'Visible', 'off')
     end
     
 %     for i = 1:length(sp)

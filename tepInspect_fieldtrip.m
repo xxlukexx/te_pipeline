@@ -1,4 +1,4 @@
-function md = tepInspect_fieldtrip(ext, md)
+function [md, tracker] = tepInspect_fieldtrip(ext, md, tracker)
 
     % if not existing metadata object is passed, create a new one
     if ~exist('md', 'var') || isempty(md)
@@ -35,6 +35,20 @@ function md = tepInspect_fieldtrip(ext, md)
     else
         md.fieldtrip.hasEvents = true;
     end
+    
+    % check for light sensor
+    [found_ls, idx_ls] = eegFT_findLightSensorChannel(tmp.ft_data);
+    md.fieldtrip.hasLightSensor = found_ls;
+    if found_ls
+        md.fieldtrip.lightSensorChannelIdx = find(idx_ls);
+        md.fieldtrip.lightSensorChannelLabel = tmp.ft_data.label{idx_ls};
+    else
+        % do we need to fill this with blank/empty vars for light sensor
+        % idx and channel label? Or is this handled by logicalstruct?
+    end
+    
+    % sync
+    [md.sync.fieldtrip, tracker] = teSyncEEG_fieldtrip(tracker, tmp.ft_data);
     
 %     % correct from light sensor markers, if present
 %     light = eegFT_matchLightSensorEvents(tmp.ft_data, 1000);

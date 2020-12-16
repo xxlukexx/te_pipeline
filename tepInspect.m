@@ -73,8 +73,12 @@ function [md, smry] = tepInspect(path_data, varargin)
             end
         end
         
+        % save updated tracker
+        saveTracker(md{s}.Paths('tracker'), tracker{s});
+        
         % hash tracker and external data, to detect changes in future
-        md{s}.Hash = lm_hashVariables(tracker{s}, ext);
+        md{s}.Hash = lm_hashClass(tracker{s}, ext);
+%         md{s}.Hash = lm_hashVariables(tracker{s}, ext);
         
         % write metadata to session folder
         path_md = fullfile(path_data, 'metadata');
@@ -82,8 +86,6 @@ function [md, smry] = tepInspect(path_data, varargin)
         file_md = fullfile(path_md, sprintf('%s.metadata.mat', md{s}.GUID));
         metadata = md{s};
         saveMetadata(file_md, metadata)
-        
-        saveTracker(md{s}.Paths('tracker'), tracker{s});
         
     end
     
@@ -97,6 +99,7 @@ function [md, smry] = tepInspect(path_data, varargin)
 end
 
 function saveMetadata(file_md, metadata)
+    fprintf('Saving metadata with hash: %s to: %s\n', metadata.Hash, file_md)
     save(file_md, 'metadata')
 end
 

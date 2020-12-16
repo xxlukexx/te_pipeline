@@ -48,7 +48,14 @@ function [md, tracker] = tepInspect_fieldtrip(ext, md, tracker)
     end
     
     % sync
-    [md.sync.fieldtrip, tracker] = teSyncEEG_fieldtrip(tracker, tmp.ft_data);
+    try
+        [md.sync.fieldtrip, tracker] = teSyncEEG_fieldtrip(tracker, tmp.ft_data);
+    catch ERR
+        md.tepInspect_fieldtrip.success = false;
+        md.tepInspect_fieldtrip.outcome =...
+            sprintf('Error syncing fieldtrip: %s', ERR.message);
+        return
+    end
     
 %     % correct from light sensor markers, if present
 %     light = eegFT_matchLightSensorEvents(tmp.ft_data, 1000);

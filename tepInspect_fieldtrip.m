@@ -1,4 +1,4 @@
-function [md, tracker] = tepInspect_fieldtrip(ext, md, tracker)
+function [md, tracker] = tepInspect_fieldtrip(ext, md, tracker, varargin)
 
     % if not existing metadata object is passed, create a new one
     if ~exist('md', 'var') || isempty(md)
@@ -48,14 +48,37 @@ function [md, tracker] = tepInspect_fieldtrip(ext, md, tracker)
     end
     
     % sync
-    try
-        [md.sync.fieldtrip, tracker] = teSyncEEG_fieldtrip(tracker, tmp.ft_data);
-    catch ERR
-        md.tepInspect_fieldtrip.success = false;
-        md.tepInspect_fieldtrip.outcome =...
-            sprintf('Error syncing fieldtrip: %s', ERR.message);
-        return
-    end
+    
+        % determine type of events -- see descriptions below
+        if ~isempty(teLogFilter(tracker.Log, 'source', 'teEventRelay_enobio_linked'))
+            
+            % events were sent using linked indices. Each task engine event
+            % was sent to the log, and an incrementing index sent to the
+            % EEG. 
+            syncFun = 'teSyncEEG_fieldtrip_linked';
+            teEcho('tepInspect_fieldtrip: detected linked index events.\n');
+            
+        else
+            
+            % events were sent with a normal event relay, which means that
+            % a numeric event was sent to the EEG, and a normal task engine
+            % event sent to the log
+            syncFun = 'teSyncEEG_fieldtrip';
+            teEcho('tepInspect_fieldtrip: detected normal event relay.\n');
+            
+        end
+            
+%     try
+        md.sync = struct;
+        [md.sync.fieldtrip, tracker] =...
+            feval(syncFun, tracker, tmp.ft_data, varargin{:});
+%             teSyncEEG_fieldtrip(tracker, tmp.ft_data, varargin{:});
+%     catch ERR
+%         md.tepInspect_fieldtrip.success = false;
+%         md.tepInspect_fieldtrip.outcome =...
+%             sprintf('Error syncing fieldtrip: %s', ERR.message);
+%         return
+%     end
     
 %     % correct from light sensor markers, if present
 %     light = eegFT_matchLightSensorEvents(tmp.ft_data, 1000);

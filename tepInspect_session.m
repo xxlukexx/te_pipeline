@@ -41,12 +41,12 @@ function md = tepInspect_session(tracker, md)
         % earliest and latest row indices (which will correspond to log
         % indices)
         tab = teLogExtract(tracker.Log);
-        md.Log.log_t1 = min(tab.timestamp);
-        md.Log.log_t2 = max(tab.timestamp);
+        md.Checks.log_t1 = min(tab.timestamp);
+        md.Checks.log_t2 = max(tab.timestamp);
 
         % check for early datasets with PTB GetSecs clock
-        if md.Log.log_t1 < 1e6
-            md.Log.log_timestamps_old = true;
+        if md.Checks.log_t1 < 1e6
+            md.Checks.log_timestamps_old = true;
         end
         
     end

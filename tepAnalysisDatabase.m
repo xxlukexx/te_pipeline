@@ -176,7 +176,7 @@ classdef tepAnalysisDatabase < handle
             end
 
             try
-%                 data = dunzip(data);
+                data = dunzip(data);
                 data = getArrayFromByteStream(uint8(data));
                 suc_deser = true;
             catch ERR_deser
@@ -215,16 +215,16 @@ classdef tepAnalysisDatabase < handle
 %             fprintf('Serialise: %.4f\n', toc);
             
             % compress
-            data = uint8(data);
-%             tic
-%             try
-%                 data = dzip(data);
-%             catch ERR
-%                 % leave data uncompressed
-%                 warning('dzip failed (%s), not using compression.', ERR.message)
-%                 data = uint8(data);
-%             end
-% %             fprintf('Compress: %.4f\n', toc);
+%             data = uint8(data);
+            tic
+            try
+                data = dzip(data);
+            catch ERR
+                % leave data uncompressed
+                warning('dzip failed (%s), not using compression.', ERR.message)
+                data = uint8(data);
+            end
+%             fprintf('Compress: %.4f\n', toc);
             
             % get the size of the response
             sz = length(data);

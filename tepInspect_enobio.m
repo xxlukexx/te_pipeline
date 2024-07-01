@@ -22,6 +22,9 @@ function md = tepInspect_enobio(ext, md)
             % convert to ft in memory
             [ft_data, ft_events, ft_t] =...
                 eegEnobio2Fieldtrip(ext.Paths('enobio_easy'));
+            
+            % check for wifi dropouts (event = 255)
+            md.enobio.num_wifi_dropouts = sum([ft_data.events.value] == 255);
 
             % save
             path_ft = fullfile(md.LocalSessionFolder, 'fieldtrip');
@@ -41,10 +44,10 @@ function md = tepInspect_enobio(ext, md)
             save(file_ft, 'ft_data')
 
             % create external data from fieldtrip data
-            ft_ext = teExternalData_Fieldtrip(path_ft);
-            md = tepInspect_externalData(ft_ext, md);
+%             ft_ext = teExternalData_Fieldtrip(path_ft);
+%             md = tepInspect_externalData(ft_ext, md);
 %             md.ImportFromExternalData(ext)
-%             
+% %             
 %             % inspect ft data
 %             md = tepInspect_fieldtrip(ft_ext, md);
 

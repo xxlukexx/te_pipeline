@@ -2,22 +2,31 @@ function tepPlotDataTimes(md, fig)
 
     if ~exist('fig', 'var') || ~ishandle(fig)
         figure('ToolBar', 'none')
+        fig = gca;
     end
 
     if ~iscell(md)
         md = {md};
     end
     
+    % storae for field names, field values and session objects
     numSes = length(md);
     allFnames = {};
     allVals = {};
     allSes = [];
+    
+    % loop through sessions
     for s = 1:numSes
+        
+        % get fieldnames and values of all entries in the .Checks field
         tmpFnames = fieldnames(md{s}.Checks);
         tmpVals = cellfun(@(x) md{s}.Checks.(x), tmpFnames, 'UniformOutput', false);
+        
+        % stoer
         allFnames = [allFnames; tmpFnames];
         allVals = [allVals; tmpVals];
         allSes = [allSes; repmat(s, length(tmpFnames), 1)];
+        
     end
     
     % signature for sorting

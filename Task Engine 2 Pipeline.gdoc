@@ -1,1 +1,3 @@
-{"url": "https://docs.google.com/open?id=1DKnRCYIcd6v7GHPxbdlAI7sCvwSCz2BZAN_MJiTnRco", "doc_id": "1DKnRCYIcd6v7GHPxbdlAI7sCvwSCz2BZAN_MJiTnRco", "email": "xxlukexx@gmail.com"}
+function tepReportDuplicates(vars, idx_dup, grp_dup)
+% Reports details of duplicate sessions (found with tepDiscoverSessions) to
+% the command window. 

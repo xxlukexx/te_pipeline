@@ -215,8 +215,13 @@ classdef tepAnalysisServer < tepAnalysisDatabase
                 obj.netSendReady(res);
                 mac_remote = obj.NetReceiveVar(res);
                 
+                % we want mac address elements to be separated by
+                % dashes, not colons 
+                mac_remote = upper(strrep(mac_remote, ':', '-'));
+                
                 % check MAC address against access list
                 if ~ismember(mac_remote, obj.prAccessList)
+
                     obj.NetError(res, 'Access denied.');
                     obj.AddLog('Client %s had MAC address %s, access denied\n',...
                         obj.prClientUser{res}, mac_remote);
